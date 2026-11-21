@@ -17,7 +17,7 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version-file: package.json
+          bun-version: canary # bun fmt/lint need 1.4.6; switch back to bun-version-file once it is stable
 
       # npm >= 11.5.1 is required for trusted publishing; Node 24 ships with it.
       - uses: actions/setup-node@v5
