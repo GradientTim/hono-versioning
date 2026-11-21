@@ -1,0 +1,72 @@
+name: Bug report
+description: Something doesn't work as documented
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting! A minimal reproduction makes it much faster to fix.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead? Include error messages or wrong responses.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: The smallest code that shows the problem, ideally a `versioning()` call plus the request you send.
+      render: ts
+      placeholder: |
+        const v1 = new Hono().get('/users', (context) => context.text('v1'))
+        const app = versioning({ versions: { v1 }, defaultVersion: 'v1', strategy: { type: 'header' } })
+
+        await app.request('/users', { headers: { 'X-API-Version': 'v1' } })
+    validations:
+      required: true
+
+  - type: dropdown
+    id: strategy
+    attributes:
+      label: Strategy
+      options:
+        - uri
+        - header
+        - query
+        - Not strategy specific (types, client, ...)
+    validations:
+      required: true
+
+  - type: input
+    id: package-version
+    attributes:
+      label: '@gradienttim/hono-versioning version'
+      placeholder: 0.1.0
+    validations:
+      required: true
+
+  - type: input
+    id: hono-version
+    attributes:
+      label: Hono version
+      placeholder: 4.13.19
+    validations:
+      required: true
+
+  - type: input
+    id: runtime
+    attributes:
+      label: Runtime and version
+      placeholder: Node 24.1.0 / Bun 1.4.6 / Deno 2.5 / Cloudflare Workers
+    validations:
+      required: true
+
+  - type: input
+    id: typescript-version
+    attributes:
+      label: TypeScript version
+      description: Only needed for type errors or wrong types on the client.
+      placeholder: 7.0.2

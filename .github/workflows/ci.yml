@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+
+      - run: bun install --frozen-lockfile
+      - run: bun fmt --check
+      - run: bun lint
+      - run: bun run type-check
+      - run: bun test
+      - run: bun run build
+
+      # Check the tarball that would be published: exports, types and package.json fields.
+      - run: bun pm pack --destination ./pack
+      - run: bunx publint --strict
+      - run: bunx attw ./pack/*.tgz --profile esm-only
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: package
+          path: pack/*.tgz
+
+  # Installs the packed tarball like a user would and runs a smoke test on every supported runtime.
+  runtimes:
+    needs: check
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runtime: node, version: 20, run: node smoke.mjs }
+          - { runtime: node, version: 22, run: node smoke.mjs }
+          - { runtime: node, version: 24, run: node smoke.mjs }
+          - { runtime: bun, version: latest, run: bun smoke.mjs }
+          - { runtime: deno, version: v2.x, run: deno run --allow-read --allow-env smoke.mjs }
+    name: ${{ matrix.runtime }} ${{ matrix.version }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: package
+          path: pack
+
+      # npm is needed for the install step in every job, so Node is always set up.
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.runtime == 'node' && matrix.version || 24 }}
+
+      - if: matrix.runtime == 'bun'
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ matrix.version }}
+
+      - if: matrix.runtime == 'deno'
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: ${{ matrix.version }}
+
+      - name: Install the tarball into an empty project
+        run: |
+          mkdir smoke && cd smoke
+          npm init -y > /dev/null
+          npm pkg set type=module
+          npm install ../pack/*.tgz hono
+          cp ../test/smoke/smoke.mjs .
+
+      - working-directory: smoke
+        run: ${{ matrix.run }}

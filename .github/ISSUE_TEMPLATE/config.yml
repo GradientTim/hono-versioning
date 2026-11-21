@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://docs.gradienttim.dev/hono-versioning
+    about: Guides and API reference. Many questions are answered here.
+  - name: Security vulnerability
+    url: https://github.com/GradientTim/hono-versioning/security/advisories/new
+    about: Please report security issues privately, not as a public issue.
