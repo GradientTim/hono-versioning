@@ -13,14 +13,14 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: canary # bun fmt/lint need 1.4.6; switch back to bun-version-file once it is stable
 
       # npm >= 11.5.1 is required for trusted publishing; Node 24 ships with it.
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
