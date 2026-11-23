@@ -47,3 +47,5 @@ jobs:
       - run: bunx attw ./pack/*.tgz --profile esm-only
       # Already checked and built above, so skip lifecycle scripts.
       - run: npm publish ./pack/*.tgz --provenance --ignore-scripts
+      # jsr.json has no version; publish with the one from package.json (checked against the tag above).
+      - run: npx jsr publish --set-version "$(node -p "require('./package.json').version")"

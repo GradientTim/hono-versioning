@@ -9,7 +9,20 @@ export type BuilderVersioningOptions<
 > = TRequired & Partial<TOptional>
 
 export interface VersioningOptions<TVersions extends Record<string, Hono>> {
+  /**
+   * Collection of available version definitions.
+   */
   versions: TVersions
+
+  /**
+   * The default version key used when no specific version is selected.
+   * Must match one of the string keys defined in the available versions map.
+   */
   defaultVersion: keyof TVersions & string
+
+  /**
+   * Defines the versioning strategy used to determine how versions are generated,
+   * compared, or applied.
+   */
   strategy: VersioningStrategy
 }

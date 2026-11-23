@@ -1,0 +1,13 @@
+{
+  "name": "@gradienttim/hono-versioning",
+  "exports": "./src/index.ts",
+  "license": "MIT",
+  "imports": {
+    "~/": "./src/",
+    "hono": "npm:hono@^4.13.19",
+    "hono/": "npm:/hono@^4.13.19/"
+  },
+  "publish": {
+    "include": ["src", "README.md", "LICENSE"]
+  }
+}

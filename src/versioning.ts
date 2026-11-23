@@ -7,6 +7,15 @@ import type { BuilderVersioningOptions, InferableVersioningStrategy, VersionSche
 import { applySelectorStrategy, applyUriStrategy, type StrategySetup } from '~/strategies'
 import { defaultVersioningOptions } from '~/defaults'
 
+/**
+ * Creates a Hono application that routes requests to registered version-specific applications using the configured versioning strategy.
+ *
+ * The default version must be present in the provided versions map. If it is not registered, an error is thrown.
+ *
+ * @param options Versioning configuration containing the registered version applications, the default version, and an optional strategy.
+ * @param honoOptions Optional Hono application options used when creating the versioning application.
+ * @return A Hono application configured with routes for the registered API versions.
+ */
 export function versioning<
   TVersions extends Record<string, Hono<any, any, any>>,
   TDefault extends keyof TVersions & string,
