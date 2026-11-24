@@ -16,7 +16,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - uses: oven-sh/setup-bun@v2
         with:
@@ -34,7 +34,7 @@ jobs:
       - run: bunx publint --strict
       - run: bunx attw ./pack/*.tgz --profile esm-only
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: package
           path: pack/*.tgz
@@ -54,15 +54,15 @@ jobs:
           - { runtime: deno, version: v2.x, run: deno run --allow-read --allow-env smoke.mjs }
     name: ${{ matrix.runtime }} ${{ matrix.version }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: package
           path: pack
 
       # npm is needed for the install step in every job, so Node is always set up.
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.runtime == 'node' && matrix.version || 24 }}
 
